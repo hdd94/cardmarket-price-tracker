@@ -1,0 +1,44 @@
+name: Daily Price Tracker
+
+on:
+  schedule:
+    # 06:17 UTC — asymmetric minute to avoid GitHub Actions queue peaks
+    - cron: "17 6 * * *"
+  workflow_dispatch: # allow manual runs from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run tracker
+        run: python tracker.py
+
+      - name: Commit updated price history
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add price_history.json
+
+          # Only commit when price_history.json actually changed
+          if git diff --cached --quiet; then
+            echo "No changes to price_history.json — skipping commit."
+          else
+            git commit -m "chore: update price history $(date -u +%Y-%m-%d)"
+            git push
+          fi
