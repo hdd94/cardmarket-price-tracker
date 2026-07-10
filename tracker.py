@@ -11,15 +11,19 @@ import requests
 # Configuration — map idProduct (as string) to human-readable name
 # ---------------------------------------------------------------------------
 TARGETS: dict[str, str] = {
-    "812570": "Duskmourn Collector Booster Display",
-    "794120": "Bloomburrow Collector Booster Display",
-    "775932": "Outlaws of Thunder Junction Collector Booster Display",
+    "868128": "Final Fantasy Collector Booster Display",
+    "863259": "Tarkir Dragonstorm Collector Booster Display",
+    "859831": "Aetherdrift Collector Booster Display",
+    "833750": "Duskmourn: House of Horror Collector Booster Display",
+    "812571": "Bloomburrow Collector Booster Display",
+    "795290": "Outlaws of Thunder Junction Collector Booster Display",
+    "774108": "Murders at Karlov Manor Collector Booster Display",
 }
 
 PRICE_HISTORY_FILE = "price_history.json"
 
 PRICE_GUIDE_URL = (
-    "https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_2.json"
+    "https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_1.json"
 )
 
 # ---------------------------------------------------------------------------
@@ -27,10 +31,14 @@ PRICE_GUIDE_URL = (
 # ---------------------------------------------------------------------------
 
 def fetch_price_guide() -> list[dict]:
-    """Download and return the full Price Guide JSON array from Cardmarket."""
+    """Download and return the priceGuides array from Cardmarket."""
     response = requests.get(PRICE_GUIDE_URL, timeout=30)
     response.raise_for_status()
-    return response.json()
+    payload = response.json()
+    # API returns {"version":1, "priceGuides": [...]}
+    if isinstance(payload, dict):
+        return payload.get("priceGuides", [])
+    return payload  # fallback if structure ever changes to bare array
 
 
 def fetch_price_guide_mock() -> list[dict]:
@@ -40,9 +48,13 @@ def fetch_price_guide_mock() -> list[dict]:
     Only used when --mock flag is passed; writes all 90 days into history.
     """
     base_prices = {
-        812570: 8.50,
-        794120: 130.00,
-        775932: 102.00,
+        868128: 350.0,   # Final Fantasy CBD
+        863259: 117.0,   # Tarkir Dragonstorm CBD
+        859831:  80.0,   # Aetherdrift CBD
+        833750: 171.0,   # Duskmourn CBD
+        812571:  73.0,   # Bloomburrow CBD
+        795290: 205.0,   # Outlaws of Thunder Junction CBD
+        774108:  73.0,   # Murders at Karlov Manor CBD
     }
 
     today = date.today()
