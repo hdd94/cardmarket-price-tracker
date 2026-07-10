@@ -1,0 +1,29 @@
+{
+  "812570": {
+    "name": "Duskmourn Collector Booster Display",
+    "prices": [
+      {
+        "date": "2026-07-10",
+        "trend": 8.13
+      }
+    ]
+  },
+  "794120": {
+    "name": "Bloomburrow Collector Booster Display",
+    "prices": [
+      {
+        "date": "2026-07-10",
+        "trend": 124.5
+      }
+    ]
+  },
+  "775932": {
+    "name": "Outlaws of Thunder Junction Collector Booster Display",
+    "prices": [
+      {
+        "date": "2026-07-10",
+        "trend": 97.2
+      }
+    ]
+  }
+}
