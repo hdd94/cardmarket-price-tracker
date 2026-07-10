@@ -44,10 +44,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add price_history.json
+          # Always update last_run.txt — keeps the repo active so GitHub
+          # never pauses the cron schedule after 60 days of inactivity.
+          echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > last_run.txt
+
+          git add price_history.json last_run.txt
 
           if git diff --cached --quiet; then
-            echo "No changes to price_history.json — skipping commit."
+            echo "No changes — skipping commit."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             git commit -m "chore: update price history $(date -u +%Y-%m-%d)"
