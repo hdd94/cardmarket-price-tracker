@@ -10,13 +10,7 @@
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: { 400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed' }
-          }
-        }
-      }
+      theme: { extend: { colors: { brand: { 400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed' } } } }
     }
   </script>
   <style>
@@ -34,7 +28,7 @@
         <span class="text-2xl">🃏</span>
         <div>
           <h1 class="text-base font-bold leading-tight">Cardmarket Price Tracker</h1>
-          <p class="text-xs text-gray-400 dark:text-gray-500">Daily trend · Git-Scraped</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500">Trend · Avg · Low · Daily</p>
         </div>
       </div>
       <button id="themeToggle" class="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Toggle dark mode">
@@ -71,19 +65,61 @@
       </div>
     </div>
 
-    <!-- Stats Row -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="statsRow">
-      <div class="card p-4"><p class="text-xs text-gray-400 dark:text-gray-500 mb-1">Latest</p><p class="text-xl font-bold" id="statLatest">—</p></div>
-      <div class="card p-4"><p class="text-xs text-gray-400 dark:text-gray-500 mb-1">7d Change</p><p class="text-xl font-bold" id="stat7d">—</p></div>
-      <div class="card p-4"><p class="text-xs text-gray-400 dark:text-gray-500 mb-1">All-Time Low</p><p class="text-xl font-bold" id="statMin">—</p></div>
-      <div class="card p-4"><p class="text-xs text-gray-400 dark:text-gray-500 mb-1">All-Time High</p><p class="text-xl font-bold" id="statMax">—</p></div>
+    <!-- Stats Row — 6 cards: latest trend/avg/low + 7d change -->
+    <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+      <div class="card p-4 col-span-1">
+        <div class="flex items-center gap-1.5 mb-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-violet-500 flex-shrink-0"></span>
+          <p class="text-xs text-gray-400 dark:text-gray-500">Trend</p>
+        </div>
+        <p class="text-lg font-bold" id="statTrend">—</p>
+      </div>
+      <div class="card p-4 col-span-1">
+        <div class="flex items-center gap-1.5 mb-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-sky-500 flex-shrink-0"></span>
+          <p class="text-xs text-gray-400 dark:text-gray-500">Avg</p>
+        </div>
+        <p class="text-lg font-bold" id="statAvg">—</p>
+      </div>
+      <div class="card p-4 col-span-1">
+        <div class="flex items-center gap-1.5 mb-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
+          <p class="text-xs text-gray-400 dark:text-gray-500">Low</p>
+        </div>
+        <p class="text-lg font-bold" id="statLow">—</p>
+      </div>
+      <div class="card p-4 col-span-1">
+        <p class="text-xs text-gray-400 dark:text-gray-500 mb-1">7d Δ Trend</p>
+        <p class="text-lg font-bold" id="stat7d">—</p>
+      </div>
+      <div class="card p-4 col-span-1">
+        <p class="text-xs text-gray-400 dark:text-gray-500 mb-1">ATL (Trend)</p>
+        <p class="text-lg font-bold" id="statMin">—</p>
+      </div>
+      <div class="card p-4 col-span-1">
+        <p class="text-xs text-gray-400 dark:text-gray-500 mb-1">ATH (Trend)</p>
+        <p class="text-lg font-bold" id="statMax">—</p>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="flex items-center gap-5 px-1">
+      <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+        <span class="block w-8 h-0.5 bg-violet-500"></span>Trend
+      </div>
+      <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+        <span class="block w-8 h-0.5 bg-sky-400" style="border-top: 2px dashed #38bdf8;"></span>Avg
+      </div>
+      <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+        <span class="block w-8 h-0.5 bg-emerald-400" style="border-top: 2px dotted #34d399;"></span>Low
+      </div>
     </div>
 
     <!-- Chart -->
     <div class="card p-5">
       <div id="chartSkeleton" class="animate-pulse flex flex-col gap-3">
         <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-        <div class="h-64 bg-gray-100 dark:bg-gray-700/50 rounded-xl"></div>
+        <div class="h-72 bg-gray-100 dark:bg-gray-700/50 rounded-xl"></div>
       </div>
       <div id="chartWrapper" class="hidden">
         <div class="flex items-center justify-between mb-4">
@@ -117,7 +153,6 @@
       document.getElementById('iconMoon').classList.toggle('hidden', dark);
       if (chartInstance) updateChart();
     });
-    // sync icons on load
     const isDark = () => html.classList.contains('dark');
     document.getElementById('iconSun').classList.toggle('hidden', !isDark());
     document.getElementById('iconMoon').classList.toggle('hidden', isDark());
@@ -125,34 +160,34 @@
     // -----------------------------------------------------------------------
     // State
     // -----------------------------------------------------------------------
-    let allData = {};
+    let allData      = {};
     let activeProduct = null;
-    let activeDays = 90;
+    let activeDays   = 90;
     let chartInstance = null;
 
     // -----------------------------------------------------------------------
-    // Utility
+    // Utilities
     // -----------------------------------------------------------------------
-    const fmt = v => `€ ${Number(v).toFixed(2)}`;
+    const fmt = v => v != null ? `€ ${Number(v).toFixed(2)}` : '—';
 
     function fmtChange(delta, pct) {
       const sign = delta >= 0 ? '+' : '';
-      return `${sign}${Number(delta).toFixed(2)} (${sign}${Number(pct).toFixed(1)}%)`;
+      return `${sign}${delta.toFixed(2)} (${sign}${pct.toFixed(1)}%)`;
     }
 
     function filterByDays(prices, days) {
       if (!days) return prices;
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - days);
-      const cutoffStr = cutoff.toISOString().slice(0, 10);
-      return prices.filter(p => p.date >= cutoffStr);
+      const cut = cutoff.toISOString().slice(0, 10);
+      return prices.filter(p => p.date >= cut);
     }
 
     function showError(msg) {
-      const banner = document.getElementById('errorBanner');
+      const b = document.getElementById('errorBanner');
       document.getElementById('errorMsg').textContent = msg;
-      banner.classList.remove('hidden');
-      banner.classList.add('flex');
+      b.classList.remove('hidden');
+      b.classList.add('flex');
     }
 
     // -----------------------------------------------------------------------
@@ -181,20 +216,24 @@
     // Stats
     // -----------------------------------------------------------------------
     function updateStats(prices) {
-      const allPrices = prices.map(p => p.trend);
-      const latest = allPrices.at(-1);
-      const ref7 = prices.length >= 7 ? prices[prices.length - 7].trend : prices[0].trend;
-      const delta = latest - ref7;
-      const pct = (delta / ref7) * 100;
-      const min = Math.min(...allPrices);
-      const max = Math.max(...allPrices);
+      const last  = prices.at(-1);
+      const ref7  = prices.length >= 7 ? prices[prices.length - 7] : prices[0];
 
-      document.getElementById('statLatest').textContent = fmt(latest);
-      const el7d = document.getElementById('stat7d');
-      el7d.textContent = fmtChange(delta, pct);
-      el7d.className = `text-xl font-bold ${delta >= 0 ? 'text-emerald-500' : 'text-red-500'}`;
-      document.getElementById('statMin').textContent = fmt(min);
-      document.getElementById('statMax').textContent = fmt(max);
+      document.getElementById('statTrend').textContent = fmt(last.trend);
+      document.getElementById('statAvg').textContent   = fmt(last.avg);
+      document.getElementById('statLow').textContent   = fmt(last.low);
+
+      if (last.trend != null && ref7.trend != null) {
+        const delta = last.trend - ref7.trend;
+        const pct   = (delta / ref7.trend) * 100;
+        const el = document.getElementById('stat7d');
+        el.textContent  = fmtChange(delta, pct);
+        el.className = `text-lg font-bold ${delta >= 0 ? 'text-emerald-500' : 'text-red-500'}`;
+      }
+
+      const trendVals = prices.map(p => p.trend).filter(v => v != null);
+      document.getElementById('statMin').textContent = fmt(Math.min(...trendVals));
+      document.getElementById('statMax').textContent = fmt(Math.max(...trendVals));
     }
 
     // -----------------------------------------------------------------------
@@ -202,10 +241,33 @@
     // -----------------------------------------------------------------------
     function chartColors() {
       return {
-        line: isDark() ? '#a78bfa' : '#7c3aed',
-        fill: isDark() ? 'rgba(167,139,250,0.12)' : 'rgba(124,58,237,0.08)',
         grid: isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
         tick: isDark() ? '#9ca3af' : '#6b7280',
+        tooltip: {
+          bg:    isDark() ? '#1f2937' : '#ffffff',
+          border:isDark() ? '#374151' : '#e5e7eb',
+          title: isDark() ? '#f9fafb' : '#111827',
+          body:  isDark() ? '#d1d5db' : '#374151',
+        },
+      };
+    }
+
+    function makeDataset(label, values, labels, color, dash = []) {
+      const sparse = values.every(v => v == null);
+      if (sparse) return null;
+      return {
+        label,
+        data: labels.map((_, i) => values[i]),
+        borderColor: color,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderDash: dash,
+        tension: 0.35,
+        pointRadius: labels.length > 60 ? 0 : 3,
+        pointHoverRadius: 5,
+        pointBackgroundColor: color,
+        fill: false,
+        spanGaps: true,
       };
     }
 
@@ -216,33 +278,24 @@
       const filtered = filterByDays(product.prices, activeDays);
       if (!filtered.length) return;
 
-      updateStats(product.prices); // always stats from full data
+      updateStats(product.prices);
 
       const labels = filtered.map(p => p.date);
-      const values = filtered.map(p => p.trend);
       const c = chartColors();
 
-      document.getElementById('chartTitle').textContent = product.name;
+      document.getElementById('chartTitle').textContent   = product.name;
       document.getElementById('chartSubtitle').textContent =
-        `${filtered.length} data point${filtered.length !== 1 ? 's' : ''}`;
+        `${filtered.length} day${filtered.length !== 1 ? 's' : ''}`;
+
+      const datasets = [
+        makeDataset('Trend (€)', filtered.map(p => p.trend), labels, '#8b5cf6'),
+        makeDataset('Avg (€)',   filtered.map(p => p.avg),   labels, '#38bdf8', [6, 3]),
+        makeDataset('Low (€)',   filtered.map(p => p.low),   labels, '#34d399', [2, 3]),
+      ].filter(Boolean);
 
       const cfg = {
         type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Trend Price (€)',
-            data: values,
-            borderColor: c.line,
-            backgroundColor: c.fill,
-            fill: true,
-            tension: 0.35,
-            pointRadius: filtered.length > 60 ? 0 : 3,
-            pointHoverRadius: 5,
-            pointBackgroundColor: c.line,
-            borderWidth: 2,
-          }]
-        },
+        data: { labels, datasets },
         options: {
           responsive: true,
           maintainAspectRatio: false,
@@ -250,38 +303,33 @@
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: isDark() ? '#1f2937' : '#ffffff',
-              borderColor: isDark() ? '#374151' : '#e5e7eb',
+              backgroundColor: c.tooltip.bg,
+              borderColor:     c.tooltip.border,
               borderWidth: 1,
-              titleColor: isDark() ? '#f9fafb' : '#111827',
-              bodyColor: isDark() ? '#d1d5db' : '#374151',
+              titleColor:  c.tooltip.title,
+              bodyColor:   c.tooltip.body,
               padding: 10,
               callbacks: {
-                label: ctx => ` ${fmt(ctx.parsed.y)}`
-              }
-            }
+                label: ctx => ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}`,
+              },
+            },
           },
           scales: {
             x: {
               type: 'time',
               time: { unit: filtered.length > 90 ? 'month' : 'week', tooltipFormat: 'yyyy-MM-dd' },
-              grid: { color: c.grid },
-              ticks: { color: c.tick, maxTicksLimit: 8 }
+              grid:  { color: c.grid },
+              ticks: { color: c.tick, maxTicksLimit: 8 },
             },
             y: {
-              grid: { color: c.grid },
-              ticks: {
-                color: c.tick,
-                callback: v => `€ ${v.toFixed(2)}`
-              }
-            }
-          }
-        }
+              grid:  { color: c.grid },
+              ticks: { color: c.tick, callback: v => `€ ${Number(v).toFixed(0)}` },
+            },
+          },
+        },
       };
 
-      if (chartInstance) {
-        chartInstance.destroy();
-      }
+      if (chartInstance) chartInstance.destroy();
       chartInstance = new Chart(document.getElementById('priceChart'), cfg);
 
       document.getElementById('chartSkeleton').classList.add('hidden');
@@ -300,10 +348,7 @@
         opt.textContent = product.name;
         sel.appendChild(opt);
       });
-      sel.addEventListener('change', () => {
-        activeProduct = sel.value;
-        updateChart();
-      });
+      sel.addEventListener('change', () => { activeProduct = sel.value; updateChart(); });
       activeProduct = sel.value;
     }
 
@@ -316,19 +361,14 @@
         const res = await fetch('./price_history.json?_=' + Date.now());
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         allData = await res.json();
-
-        const products = Object.keys(allData);
-        if (!products.length) throw new Error('price_history.json is empty.');
+        if (!Object.keys(allData).length) throw new Error('price_history.json is empty.');
 
         buildDropdown();
         updateChart();
 
-        // Last updated: latest date across all products
-        const dates = Object.values(allData).flatMap(p => p.prices.map(e => e.date));
+        const dates  = Object.values(allData).flatMap(p => p.prices.map(e => e.date));
         const latest = dates.sort().at(-1);
-        if (latest) {
-          document.getElementById('lastUpdated').textContent = `Last updated: ${latest}`;
-        }
+        if (latest) document.getElementById('lastUpdated').textContent = `Last updated: ${latest}`;
       } catch (err) {
         showError(`Failed to load price data: ${err.message}`);
         document.getElementById('chartSkeleton').classList.add('hidden');

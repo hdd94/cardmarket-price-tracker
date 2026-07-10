@@ -8,7 +8,7 @@ from datetime import date, timedelta
 import requests
 
 # ---------------------------------------------------------------------------
-# Configuration — map idProduct (as string) to human-readable name
+# Configuration
 # ---------------------------------------------------------------------------
 TARGETS: dict[str, str] = {
     "803869": "Aetherdrift Collector Booster Box",
@@ -31,61 +31,52 @@ PRICE_GUIDE_URL = (
 )
 
 # ---------------------------------------------------------------------------
-# Data fetching
+# Fetching
 # ---------------------------------------------------------------------------
 
 def fetch_price_guide() -> list[dict]:
-    """Download and return the priceGuides array from Cardmarket."""
     response = requests.get(PRICE_GUIDE_URL, timeout=30)
     response.raise_for_status()
     payload = response.json()
-    # API returns {"version":1, "priceGuides": [...]}
     if isinstance(payload, dict):
         return payload.get("priceGuides", [])
-    return payload  # fallback if structure ever changes to bare array
+    return payload
 
 
 def fetch_price_guide_mock() -> list[dict]:
-    """
-    Return a realistic 90-day simulated Price Guide payload for local testing.
-    Generates smooth price curves with noise so charts look meaningful.
-    Only used when --mock flag is passed; writes all 90 days into history.
-    """
+    """90-day realistic backfill for local testing — generates trend/avg/low."""
     base_prices = {
-        803869: 208.0,   # Aetherdrift
-        813080: 346.0,   # Tarkir: Dragonstorm
-        812573: 910.0,   # Final Fantasy
-        813293: 456.0,   # Edge of Eternities
-        814380: 299.0,   # Spider-Man
-        842564: 313.0,   # Avatar
-        851271: 306.0,   # Lorwyn Eclipsed
-        853671: 279.0,   # TMNT
-        869357: 317.0,   # Secrets of Strixhaven
-        869496: 297.0,   # Marvel Super Heroes
-        885552: 566.0,   # The Hobbit
+        803869: 208.0,
+        813080: 346.0,
+        812573: 910.0,
+        813293: 456.0,
+        814380: 299.0,
+        842564: 313.0,
+        851271: 306.0,
+        853671: 279.0,
+        869357: 317.0,
+        869496: 297.0,
+        885552: 566.0,
     }
 
     today = date.today()
-    entries_by_date: dict[str, list[dict]] = {}
-
+    result = []
     for days_ago in range(89, -1, -1):
-        day = today - timedelta(days=days_ago)
-        day_str = day.isoformat()
-        daily_entries = []
+        day_str = (today - timedelta(days=days_ago)).isoformat()
         for pid, base in base_prices.items():
-            # Slow sinusoidal drift + bounded random walk
             t = days_ago / 30.0
             drift = base * 0.12 * math.sin(t * math.pi)
-            noise = base * random.uniform(-0.03, 0.03)
-            trend = round(max(base * 0.6, base + drift + noise), 2)
-            daily_entries.append({"idProduct": pid, "idCategory": 2, "trend": trend})
-        entries_by_date[day_str] = daily_entries
-
-    # Expose as a flat list tagged with date so update_history can iterate
-    result = []
-    for day_str, entries in entries_by_date.items():
-        for e in entries:
-            result.append({**e, "_mock_date": day_str})
+            trend = round(max(base * 0.6, base + drift + random.uniform(-0.03, 0.03) * base), 2)
+            avg   = round(trend * random.uniform(0.96, 1.04), 2)
+            low   = round(trend * random.uniform(0.80, 0.95), 2)
+            result.append({
+                "idProduct": pid,
+                "idCategory": 2,
+                "trend": trend,
+                "avg": avg,
+                "low": low,
+                "_mock_date": day_str,
+            })
     return result
 
 
@@ -93,20 +84,28 @@ def fetch_price_guide_mock() -> list[dict]:
 # Core logic
 # ---------------------------------------------------------------------------
 
-def extract_trends(
+def extract_prices(
     price_guide: list[dict],
     targets: dict[str, str],
-    override_date: str | None = None,
-) -> dict[str, tuple[float, str]]:
-    """Return {idProduct_str: (trend, date)} for every tracked product."""
+    today: str,
+) -> dict[str, dict]:
+    """
+    Return {pid_str: {"trend": float, "avg": float|None, "low": float|None, "date": str}}
+    for every tracked product found in the guide.
+    """
     target_ids = {int(k) for k in targets}
-    trends: dict[str, tuple[float, str]] = {}
+    out: dict[str, dict] = {}
     for entry in price_guide:
         pid = entry.get("idProduct")
         if pid in target_ids:
-            entry_date = entry.get("_mock_date", override_date or date.today().isoformat())
-            trends[str(pid)] = (float(entry["trend"]), entry_date)
-    return trends
+            entry_date = entry.get("_mock_date", today)
+            out[str(pid)] = {
+                "date":  entry_date,
+                "trend": float(entry["trend"]) if entry.get("trend") is not None else None,
+                "avg":   float(entry["avg"])   if entry.get("avg")   is not None else None,
+                "low":   float(entry["low"])   if entry.get("low")   is not None else None,
+            }
+    return out
 
 
 def load_history(path: str) -> dict:
@@ -124,30 +123,40 @@ def save_history(path: str, history: dict) -> None:
 
 def update_history(
     history: dict,
-    trends: dict[str, tuple[float, str]],
+    prices: dict[str, dict],
     targets: dict[str, str],
 ) -> tuple[dict, int]:
     """
-    Merge trends into history. Returns (updated_history, new_entry_count).
+    Merge today's prices into history. Idempotent — skips existing dates.
 
-    JSON structure:
+    JSON structure per product:
       {
-        "812570": {
-          "name": "...",
-          "prices": [{"date": "2025-07-10", "trend": 8.13}, ...]
-        }
+        "name": "...",
+        "prices": [
+          {"date": "2026-07-10", "trend": 909.98, "avg": 796.88, "low": 679.99},
+          ...
+        ]
       }
-    Idempotent: skips any (product, date) pair already recorded.
     """
     new_count = 0
-    for pid, (trend, entry_date) in trends.items():
+    for pid, data in prices.items():
+        entry_date = data["date"]
         if pid not in history:
             history[pid] = {"name": targets[pid], "prices": []}
         existing_dates = {e["date"] for e in history[pid]["prices"]}
         if entry_date not in existing_dates:
-            history[pid]["prices"].append({"date": entry_date, "trend": trend})
+            history[pid]["prices"].append({
+                "date":  entry_date,
+                "trend": data["trend"],
+                "avg":   data["avg"],
+                "low":   data["low"],
+            })
             history[pid]["prices"].sort(key=lambda e: e["date"])
-            print(f"  + {targets[pid]}: {trend} € on {entry_date}")
+            t = data["trend"]
+            a = data["avg"]
+            l = data["low"]
+            print(f"  + {targets[pid]}")
+            print(f"      trend={t} € | avg={a} € | low={l} € | {entry_date}")
             new_count += 1
         else:
             print(f"  ~ {targets[pid]}: already recorded for {entry_date}, skipped")
@@ -167,31 +176,35 @@ def main() -> None:
     print()
 
     price_guide = fetch_price_guide_mock() if mock_mode else fetch_price_guide()
-
     history = load_history(PRICE_HISTORY_FILE)
 
     if mock_mode:
-        # Mock data carries per-entry dates — process each entry individually
         for entry in price_guide:
             pid = str(entry.get("idProduct"))
-            if pid in TARGETS:
-                entry_date = entry["_mock_date"]
-                existing_dates = {e["date"] for e in history.get(pid, {}).get("prices", [])}
-                if entry_date not in existing_dates:
-                    if pid not in history:
-                        history[pid] = {"name": TARGETS[pid], "prices": []}
-                    history[pid]["prices"].append({"date": entry_date, "trend": entry["trend"]})
+            if pid not in TARGETS:
+                continue
+            entry_date = entry["_mock_date"]
+            if pid not in history:
+                history[pid] = {"name": TARGETS[pid], "prices": []}
+            existing = {e["date"] for e in history[pid]["prices"]}
+            if entry_date not in existing:
+                history[pid]["prices"].append({
+                    "date":  entry_date,
+                    "trend": entry["trend"],
+                    "avg":   entry["avg"],
+                    "low":   entry["low"],
+                })
         for pid in TARGETS:
             if pid in history:
                 history[pid]["prices"].sort(key=lambda e: e["date"])
         total = sum(len(history[p]["prices"]) for p in TARGETS if p in history)
         print(f"  Mock backfill complete — {total} total entries written.")
     else:
-        trends = extract_trends(price_guide, TARGETS, today)
-        missing = [name for pid, name in TARGETS.items() if pid not in trends]
+        prices = extract_prices(price_guide, TARGETS, today)
+        missing = [name for pid, name in TARGETS.items() if pid not in prices]
         if missing:
             print(f"WARNING: no data found for: {', '.join(missing)}")
-        history, new_count = update_history(history, trends, TARGETS)
+        history, new_count = update_history(history, prices, TARGETS)
         print()
         print(f"price_history.json updated ({new_count} new entry/entries recorded).")
 
