@@ -11,15 +11,17 @@ import requests
 # Configuration — map idProduct (as string) to human-readable name
 # ---------------------------------------------------------------------------
 TARGETS: dict[str, str] = {
-    "859831": "Aetherdrift Collector Booster Display",
-    "863259": "Tarkir: Dragonstorm Collector Booster Display",
-    "868128": "Magic: The Gathering — FINAL FANTASY Collector Booster Display",
-    "885550": "Edge of Eternities Collector Booster Display",
-    "869501": "Magic: The Gathering | Marvel's Spider-Man Collector Booster Display",
-    "877778": "Magic: The Gathering | Avatar: The Last Airbender Collector Booster Display",
-    "883463": "Magic: The Gathering | Teenage Mutant Ninja Turtles Collector Booster Display",
-    "887064": "Secrets of Strixhaven Collector Booster Display",
-    "893963": "Magic: The Gathering | Marvel Super Heroes Collector Booster Display",
+    "803869": "Aetherdrift Collector Booster Box",
+    "813080": "Tarkir: Dragonstorm Collector Booster Box",
+    "812573": "Magic: The Gathering — FINAL FANTASY Collector Booster Box",
+    "813293": "Edge of Eternities Collector Booster Box",
+    "814380": "Magic: The Gathering | Marvel's Spider-Man Collector Booster Box",
+    "842564": "Magic: The Gathering | Avatar: The Last Airbender Collector Booster Box",
+    "851271": "Lorwyn Eclipsed Collector Booster Box",
+    "853671": "Magic: The Gathering | Teenage Mutant Ninja Turtles Collector Booster Box",
+    "869357": "Secrets of Strixhaven Collector Booster Box",
+    "869496": "Magic: The Gathering | Marvel Super Heroes Collector Booster Box",
+    "885552": "The Hobbit Collector Booster Box",
 }
 
 PRICE_HISTORY_FILE = "price_history.json"
@@ -50,15 +52,17 @@ def fetch_price_guide_mock() -> list[dict]:
     Only used when --mock flag is passed; writes all 90 days into history.
     """
     base_prices = {
-        859831:  80.0,   # Aetherdrift
-        863259: 117.0,   # Tarkir: Dragonstorm
-        868128: 350.0,   # Final Fantasy
-        885550:  51.0,   # Edge of Eternities
-        869501: 208.0,   # Spider-Man
-        877778: 179.0,   # Avatar: The Last Airbender
-        883463: 295.0,   # TMNT
-        887064: 351.0,   # Secrets of Strixhaven
-        893963: 310.0,   # Marvel Super Heroes
+        803869: 208.0,   # Aetherdrift
+        813080: 346.0,   # Tarkir: Dragonstorm
+        812573: 910.0,   # Final Fantasy
+        813293: 456.0,   # Edge of Eternities
+        814380: 299.0,   # Spider-Man
+        842564: 313.0,   # Avatar
+        851271: 306.0,   # Lorwyn Eclipsed
+        853671: 279.0,   # TMNT
+        869357: 317.0,   # Secrets of Strixhaven
+        869496: 297.0,   # Marvel Super Heroes
+        885552: 566.0,   # The Hobbit
     }
 
     today = date.today()

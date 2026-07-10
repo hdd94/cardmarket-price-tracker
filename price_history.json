@@ -1,82 +1,100 @@
 {
-  "859831": {
-    "name": "Aetherdrift Collector Booster Display",
+  "803869": {
+    "name": "Aetherdrift Collector Booster Box",
     "prices": [
       {
         "date": "2026-07-10",
-        "trend": 80.13
+        "trend": 207.82
       }
     ]
   },
-  "863259": {
-    "name": "Tarkir: Dragonstorm Collector Booster Display",
+  "812573": {
+    "name": "Magic: The Gathering — FINAL FANTASY Collector Booster Box",
     "prices": [
       {
         "date": "2026-07-10",
-        "trend": 116.88
+        "trend": 909.98
       }
     ]
   },
-  "868128": {
-    "name": "Magic: The Gathering — FINAL FANTASY Collector Booster Display",
+  "813080": {
+    "name": "Tarkir: Dragonstorm Collector Booster Box",
     "prices": [
       {
         "date": "2026-07-10",
-        "trend": 350.0
+        "trend": 345.95
       }
     ]
   },
-  "869501": {
-    "name": "Magic: The Gathering | Marvel's Spider-Man Collector Booster Display",
+  "813293": {
+    "name": "Edge of Eternities Collector Booster Box",
     "prices": [
       {
         "date": "2026-07-10",
-        "trend": 208.1
+        "trend": 456.22
       }
     ]
   },
-  "877778": {
-    "name": "Magic: The Gathering | Avatar: The Last Airbender Collector Booster Display",
+  "814380": {
+    "name": "Magic: The Gathering | Marvel's Spider-Man Collector Booster Box",
     "prices": [
       {
         "date": "2026-07-10",
-        "trend": 179.47
+        "trend": 299.21
       }
     ]
   },
-  "883463": {
-    "name": "Magic: The Gathering | Teenage Mutant Ninja Turtles Collector Booster Display",
+  "842564": {
+    "name": "Magic: The Gathering | Avatar: The Last Airbender Collector Booster Box",
     "prices": [
       {
         "date": "2026-07-10",
-        "trend": 295.24
+        "trend": 313.29
       }
     ]
   },
-  "885550": {
-    "name": "Edge of Eternities Collector Booster Display",
+  "851271": {
+    "name": "Lorwyn Eclipsed Collector Booster Box",
     "prices": [
       {
         "date": "2026-07-10",
-        "trend": 50.57
+        "trend": 306.45
       }
     ]
   },
-  "887064": {
-    "name": "Secrets of Strixhaven Collector Booster Display",
+  "853671": {
+    "name": "Magic: The Gathering | Teenage Mutant Ninja Turtles Collector Booster Box",
     "prices": [
       {
         "date": "2026-07-10",
-        "trend": 351.31
+        "trend": 279.16
       }
     ]
   },
-  "893963": {
-    "name": "Magic: The Gathering | Marvel Super Heroes Collector Booster Display",
+  "869357": {
+    "name": "Secrets of Strixhaven Collector Booster Box",
     "prices": [
       {
         "date": "2026-07-10",
-        "trend": 309.55
+        "trend": 317.44
+      }
+    ]
+  },
+  "869496": {
+    "name": "Magic: The Gathering | Marvel Super Heroes Collector Booster Box",
+    "prices": [
+      {
+        "date": "2026-07-10",
+        "trend": 297.19
+      }
+    ]
+  },
+  "885552": {
+    "name": "The Hobbit Collector Booster Box",
+    "prices": [
+      {
+        "date": "2026-07-10",
+        "trend": 565.54
       }
     ]
   }
