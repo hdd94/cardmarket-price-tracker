@@ -1,58 +1,4 @@
 {
-  "758898": {
-    "name": "The Lost Caverns of Ixalan Collector Booster Display",
-    "prices": [
-      {
-        "date": "2026-07-10",
-        "trend": 129.68
-      }
-    ]
-  },
-  "774108": {
-    "name": "Murders at Karlov Manor Collector Booster Display",
-    "prices": [
-      {
-        "date": "2026-07-10",
-        "trend": 73.49
-      }
-    ]
-  },
-  "795290": {
-    "name": "Outlaws of Thunder Junction Collector Booster Display",
-    "prices": [
-      {
-        "date": "2026-07-10",
-        "trend": 204.79
-      }
-    ]
-  },
-  "812571": {
-    "name": "Bloomburrow Collector Booster Display",
-    "prices": [
-      {
-        "date": "2026-07-10",
-        "trend": 72.56
-      }
-    ]
-  },
-  "833750": {
-    "name": "Duskmourn: House of Horror Collector Booster Display",
-    "prices": [
-      {
-        "date": "2026-07-10",
-        "trend": 171.42
-      }
-    ]
-  },
-  "834552": {
-    "name": "Foundations Collector Booster Display",
-    "prices": [
-      {
-        "date": "2026-07-10",
-        "trend": 52.59
-      }
-    ]
-  },
   "859831": {
     "name": "Aetherdrift Collector Booster Display",
     "prices": [
@@ -62,17 +8,8 @@
       }
     ]
   },
-  "861965": {
-    "name": "Tarkir Dragonstorm Collector Booster Display (JP)",
-    "prices": [
-      {
-        "date": "2026-07-10",
-        "trend": 84.05
-      }
-    ]
-  },
   "863259": {
-    "name": "Tarkir Dragonstorm Collector Booster Display",
+    "name": "Tarkir: Dragonstorm Collector Booster Display",
     "prices": [
       {
         "date": "2026-07-10",
@@ -81,11 +18,38 @@
     ]
   },
   "868128": {
-    "name": "Final Fantasy Collector Booster Display",
+    "name": "Magic: The Gathering — FINAL FANTASY Collector Booster Display",
     "prices": [
       {
         "date": "2026-07-10",
         "trend": 350.0
+      }
+    ]
+  },
+  "869501": {
+    "name": "Magic: The Gathering | Marvel's Spider-Man Collector Booster Display",
+    "prices": [
+      {
+        "date": "2026-07-10",
+        "trend": 208.1
+      }
+    ]
+  },
+  "877778": {
+    "name": "Magic: The Gathering | Avatar: The Last Airbender Collector Booster Display",
+    "prices": [
+      {
+        "date": "2026-07-10",
+        "trend": 179.47
+      }
+    ]
+  },
+  "883463": {
+    "name": "Magic: The Gathering | Teenage Mutant Ninja Turtles Collector Booster Display",
+    "prices": [
+      {
+        "date": "2026-07-10",
+        "trend": 295.24
       }
     ]
   },
@@ -95,6 +59,24 @@
       {
         "date": "2026-07-10",
         "trend": 50.57
+      }
+    ]
+  },
+  "887064": {
+    "name": "Secrets of Strixhaven Collector Booster Display",
+    "prices": [
+      {
+        "date": "2026-07-10",
+        "trend": 351.31
+      }
+    ]
+  },
+  "893963": {
+    "name": "Magic: The Gathering | Marvel Super Heroes Collector Booster Display",
+    "prices": [
+      {
+        "date": "2026-07-10",
+        "trend": 309.55
       }
     ]
   }

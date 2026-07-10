@@ -11,17 +11,15 @@ import requests
 # Configuration — map idProduct (as string) to human-readable name
 # ---------------------------------------------------------------------------
 TARGETS: dict[str, str] = {
-    "885550": "Edge of Eternities Collector Booster Display",
-    "868128": "Final Fantasy Collector Booster Display",
-    "863259": "Tarkir Dragonstorm Collector Booster Display",
-    "861965": "Tarkir Dragonstorm Collector Booster Display (JP)",
     "859831": "Aetherdrift Collector Booster Display",
-    "834552": "Foundations Collector Booster Display",
-    "833750": "Duskmourn: House of Horror Collector Booster Display",
-    "812571": "Bloomburrow Collector Booster Display",
-    "795290": "Outlaws of Thunder Junction Collector Booster Display",
-    "774108": "Murders at Karlov Manor Collector Booster Display",
-    "758898": "The Lost Caverns of Ixalan Collector Booster Display",
+    "863259": "Tarkir: Dragonstorm Collector Booster Display",
+    "868128": "Magic: The Gathering — FINAL FANTASY Collector Booster Display",
+    "885550": "Edge of Eternities Collector Booster Display",
+    "869501": "Magic: The Gathering | Marvel's Spider-Man Collector Booster Display",
+    "877778": "Magic: The Gathering | Avatar: The Last Airbender Collector Booster Display",
+    "883463": "Magic: The Gathering | Teenage Mutant Ninja Turtles Collector Booster Display",
+    "887064": "Secrets of Strixhaven Collector Booster Display",
+    "893963": "Magic: The Gathering | Marvel Super Heroes Collector Booster Display",
 }
 
 PRICE_HISTORY_FILE = "price_history.json"
@@ -52,17 +50,15 @@ def fetch_price_guide_mock() -> list[dict]:
     Only used when --mock flag is passed; writes all 90 days into history.
     """
     base_prices = {
-        885550:  51.0,   # Edge of Eternities CBD
-        868128: 350.0,   # Final Fantasy CBD
-        863259: 117.0,   # Tarkir Dragonstorm CBD
-        861965:  84.0,   # Tarkir Dragonstorm CBD (JP)
-        859831:  80.0,   # Aetherdrift CBD
-        834552:  53.0,   # Foundations CBD
-        833750: 171.0,   # Duskmourn CBD
-        812571:  73.0,   # Bloomburrow CBD
-        795290: 205.0,   # Outlaws of Thunder Junction CBD
-        774108:  73.0,   # Murders at Karlov Manor CBD
-        758898: 130.0,   # Lost Caverns of Ixalan CBD
+        859831:  80.0,   # Aetherdrift
+        863259: 117.0,   # Tarkir: Dragonstorm
+        868128: 350.0,   # Final Fantasy
+        885550:  51.0,   # Edge of Eternities
+        869501: 208.0,   # Spider-Man
+        877778: 179.0,   # Avatar: The Last Airbender
+        883463: 295.0,   # TMNT
+        887064: 351.0,   # Secrets of Strixhaven
+        893963: 310.0,   # Marvel Super Heroes
     }
 
     today = date.today()
